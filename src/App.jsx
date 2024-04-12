@@ -13,6 +13,11 @@ const App = () => {
     inputShape: [1, 0, 0, 3],
   }); // init model & input shape
 
+  const [classificator, setClassificator] = useState({
+    net: null,
+    inputShape: [1, 0, 0, 3],
+  }); // init model & input shape
+
   // references
   const imageRef = useRef(null);
   const cameraRef = useRef(null);
@@ -23,7 +28,7 @@ const App = () => {
   const modelName = "yolov5n";
   const classThreshold = 0.2;
 
-  useEffect(() => {
+  useEffect(() => { // Carregar yolo
     tf.ready().then(async () => {
       const yolov5 = await tf.loadGraphModel(
         `${window.location.href}/${modelName}_web_model/model.json`,
@@ -47,6 +52,39 @@ const App = () => {
       }); // set model & input shape
     });
   }, []);
+
+  useEffect(() => { // Carregar yolo
+    tf.ready().then(async () => {
+      const mobileNet = await tf.loadLayersModel(
+        `${window.location.href}/classificator/model.json`,
+        {
+          onProgress: (fractions) => {
+            setLoading({ loading: true, progress: fractions }); // set loading fractions
+          },
+        }
+      ); // load model
+
+      // warming up model
+
+      const inputShape = mobileNet.inputs[0].shape.map(dim => dim || 1);
+      const dummyInput = tf.ones(inputShape);
+      const warmupResult = await mobileNet.predict(dummyInput);
+      console.log(warmupResult)
+      tf.dispose(warmupResult); // cleanup memory
+      tf.dispose(dummyInput); // cleanup memory
+
+      setLoading({ loading: false, progress: 1 });
+      setClassificator({
+        net: mobileNet,
+        inputShape: mobileNet.inputs[0].shape,
+      }); // set model & input shape
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log(classificator)
+  }, [classificator])
+
 
   return (
     <div className="App">
