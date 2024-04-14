@@ -4,6 +4,7 @@ import "@tensorflow/tfjs-backend-webgl"; // set backend to webgl
 import Loader from "./components/loader";
 import ButtonHandler from "./components/btn-handler";
 import { detectImage, detectVideo } from "./utils/detect";
+import { cropImage } from './utils/cropImage';
 import "./style/App.css";
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
     net: null,
     inputShape: [1, 0, 0, 3],
   }); // init model & input shape
+  const [boundingBoxes, setBoundingBoxes] = useState([])
 
   const [classificator, setClassificator] = useState({
     net: null,
@@ -69,7 +71,7 @@ const App = () => {
       const inputShape = mobileNet.inputs[0].shape.map(dim => dim || 1);
       const dummyInput = tf.ones(inputShape);
       const warmupResult = await mobileNet.predict(dummyInput);
-      console.log(warmupResult)
+      // console.log(warmupResult)
       tf.dispose(warmupResult); // cleanup memory
       tf.dispose(dummyInput); // cleanup memory
 
@@ -82,8 +84,13 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log(classificator)
-  }, [classificator])
+    console.log(boundingBoxes)
+  }, [boundingBoxes])
+
+  const handleDetectImage = async () => {
+    const bb = await detectImage(imageRef.current, model, classThreshold, canvasRef.current)
+    setBoundingBoxes(bb)
+  }
 
 
   return (
@@ -103,7 +110,7 @@ const App = () => {
         <img
           src="#"
           ref={imageRef}
-          onLoad={() => detectImage(imageRef.current, model, classThreshold, canvasRef.current)}
+          onLoad={() => handleDetectImage()}
         />
         <video
           autoPlay

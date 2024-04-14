@@ -41,10 +41,11 @@ const preprocess = (source, modelWidth, modelHeight) => {
  * @param {tf.GraphModel} model loaded YOLOv5 tensorflow.js model
  * @param {Number} classThreshold class threshold
  * @param {HTMLCanvasElement} canvasRef canvas reference
+ * @returns {Promise<Array>}
  */
 export const detectImage = async (imgSource, model, classThreshold, canvasRef) => {
   const [modelWidth, modelHeight] = model.inputShape.slice(1, 3); // get model width and height
-
+  let boundingBox = []
   tf.engine().startScope(); // start scoping tf engine
   const [input, xRatio, yRatio] = preprocess(imgSource, modelWidth, modelHeight);
 
@@ -53,10 +54,11 @@ export const detectImage = async (imgSource, model, classThreshold, canvasRef) =
     const boxes_data = boxes.dataSync();
     const scores_data = scores.dataSync();
     const classes_data = classes.dataSync();
-    renderBoxes(canvasRef, classThreshold, boxes_data, scores_data, classes_data, [xRatio, yRatio]); // render boxes
+    boundingBox = renderBoxes(canvasRef, classThreshold, boxes_data, scores_data, classes_data, [xRatio, yRatio]); // render boxes
     tf.dispose(res); // clear memory
-  });
 
+  });
+  return boundingBox
   tf.engine().endScope(); // end of scoping
 };
 

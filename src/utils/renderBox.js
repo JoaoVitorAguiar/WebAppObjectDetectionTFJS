@@ -30,6 +30,8 @@ export const renderBoxes = (
   ctx.font = font;
   ctx.textBaseline = "top";
 
+  let boundingBoxes = []; // Lif of Bounding Box
+
   for (let i = 0; i < scores_data.length; ++i) {
     // filter based on class threshold
     if (scores_data[i] > classThreshold) {
@@ -44,6 +46,8 @@ export const renderBoxes = (
       y2 *= canvasRef.height * ratios[1];
       const width = x2 - x1;
       const height = y2 - y1;
+
+      boundingBoxes.push({ x1, y1, width, height, class: klass, score });
 
       // draw box.
       ctx.fillStyle = Colors.hexToRgba(color, 0.2);
@@ -70,6 +74,8 @@ export const renderBoxes = (
       ctx.fillText(klass + " - " + score + "%", x1 - 1, yText < 0 ? 0 : yText);
     }
   }
+
+  return boundingBoxes;
 };
 
 class Colors {
@@ -106,8 +112,8 @@ class Colors {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
       ? `rgba(${[parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)].join(
-          ", "
-        )}, ${alpha})`
+        ", "
+      )}, ${alpha})`
       : null;
   };
 }
