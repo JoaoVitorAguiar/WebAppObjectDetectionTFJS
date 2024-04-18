@@ -3,6 +3,7 @@ import labels from "./labels.json";
 /**
  * Render prediction boxes
  * @param {HTMLCanvasElement} canvasRef canvas tag reference
+ * @param {HTMLVideoElement|HTMLImageElement} source
  * @param {number} classThreshold class threshold
  * @param {Array} boxes_data boxes array
  * @param {Array} scores_data scores array
@@ -11,6 +12,7 @@ import labels from "./labels.json";
  */
 export const renderBoxes = (
   canvasRef,
+  source,
   classThreshold,
   boxes_data,
   scores_data,
@@ -31,7 +33,6 @@ export const renderBoxes = (
   ctx.textBaseline = "top";
 
   let boundingBoxes = []; // Lif of Bounding Box
-
   for (let i = 0; i < scores_data.length; ++i) {
     // filter based on class threshold
     if (scores_data[i] > classThreshold) {
@@ -40,6 +41,26 @@ export const renderBoxes = (
       const score = (scores_data[i] * 100).toFixed(1);
 
       let [x1, y1, x2, y2] = boxes_data.slice(i * 4, (i + 1) * 4);
+      console.log("ImageRef", source.width, source.height)
+      x1 *= source.width * ratios[0];
+      x2 *= source.width * ratios[0];
+      y1 *= source.height * ratios[1];
+      y2 *= source.height * ratios[1];
+      const width = x2 - x1;
+      const height = y2 - y1;
+
+      boundingBoxes.push({ x1, y1, width, height, class: klass, score })
+    }
+  }
+
+  for (let i = 0; i < scores_data.length; ++i) {
+    // filter based on class threshold
+    if (scores_data[i] > classThreshold) {
+      const klass = labels[classes_data[i]];
+      const color = colors.get(classes_data[i]);
+      const score = (scores_data[i] * 100).toFixed(1);
+      console.log("CanvasRef", canvasRef.width, canvasRef.height)
+      let [x1, y1, x2, y2] = boxes_data.slice(i * 4, (i + 1) * 4);
       x1 *= canvasRef.width * ratios[0];
       x2 *= canvasRef.width * ratios[0];
       y1 *= canvasRef.height * ratios[1];
@@ -47,7 +68,7 @@ export const renderBoxes = (
       const width = x2 - x1;
       const height = y2 - y1;
 
-      boundingBoxes.push({ x1, y1, width, height, class: klass, score });
+      // boundingBoxes.push({ x1, y1, width, height, class: klass, score })
 
       // draw box.
       ctx.fillStyle = Colors.hexToRgba(color, 0.2);
@@ -75,7 +96,7 @@ export const renderBoxes = (
     }
   }
 
-  return boundingBoxes;
+  return boundingBoxes
 };
 
 class Colors {

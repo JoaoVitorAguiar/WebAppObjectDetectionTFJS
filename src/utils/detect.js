@@ -16,6 +16,7 @@ const preprocess = (source, modelWidth, modelHeight) => {
 
     // padding image to square => [n, m] to [n, n], n > m
     const [h, w] = img.shape.slice(0, 2); // get source width and height
+    console.log("w,h => preprocess", w, h)
     const maxSize = Math.max(w, h); // get max size
     const imgPadded = img.pad([
       [0, maxSize - h], // padding y [bottom only]
@@ -31,7 +32,7 @@ const preprocess = (source, modelWidth, modelHeight) => {
       .div(255.0) // normalize
       .expandDims(0); // add batch
   });
-
+  console.log("preprocess", input, xRatio, yRatio)
   return [input, xRatio, yRatio];
 };
 
@@ -54,12 +55,12 @@ export const detectImage = async (imgSource, model, classThreshold, canvasRef) =
     const boxes_data = boxes.dataSync();
     const scores_data = scores.dataSync();
     const classes_data = classes.dataSync();
-    boundingBox = renderBoxes(canvasRef, classThreshold, boxes_data, scores_data, classes_data, [xRatio, yRatio]); // render boxes
+    boundingBox = renderBoxes(canvasRef, imgSource, classThreshold, boxes_data, scores_data, classes_data, [xRatio, yRatio]); // render boxes
     tf.dispose(res); // clear memory
 
   });
-  return boundingBox
   tf.engine().endScope(); // end of scoping
+  return boundingBox
 };
 
 /**

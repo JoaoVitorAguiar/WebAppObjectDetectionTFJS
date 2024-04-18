@@ -55,7 +55,7 @@ const App = () => {
     });
   }, []);
 
-  useEffect(() => { // Carregar yolo
+  useEffect(() => { // Carregar classificador
     tf.ready().then(async () => {
       const mobileNet = await tf.loadLayersModel(
         `${window.location.href}/classificator/model.json`,
@@ -84,13 +84,69 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log(boundingBoxes)
-  }, [boundingBoxes])
+    console.log(imageRef.current)
+  }, [imageRef])
 
   const handleDetectImage = async () => {
-    const bb = await detectImage(imageRef.current, model, classThreshold, canvasRef.current)
-    setBoundingBoxes(bb)
-  }
+    // Obtenha a razão entre as dimensões da imagem original e um tamanho máximo desejado
+    let maxWidth = 720; // Defina isso para o max-width desejado
+    let maxHeight = 500; // Defina isso para o max-height desejado
+    const ratioWidth = imageRef.current.width / maxWidth;
+    const ratioHeight = imageRef.current.height / maxHeight;
+    const ratio = Math.max(ratioWidth, ratioHeight);
+
+    // Calcule as novas dimensões da imagem
+    const newWidth = imageRef.current.width / ratio;
+    const newHeight = imageRef.current.height / ratio;
+
+    // Crie um novo elemento canvas para redimensionar a imagem
+    const resizeCanvas = document.createElement('canvas');
+    resizeCanvas.width = newWidth;
+    resizeCanvas.height = newHeight;
+    const resizeCtx = resizeCanvas.getContext('2d');
+
+    // Desenhe a imagem original no canvas de redimensionamento
+    resizeCtx.drawImage(imageRef.current, 0, 0, newWidth, newHeight);
+
+    // Agora use o canvas de redimensionamento em vez da imagem original
+    const source = resizeCanvas;
+
+    const bb = await detectImage(source, model, classThreshold, canvasRef.current);
+    console.log(bb); // Imprima a variável 'bb'
+    setBoundingBoxes(bb);
+
+    // Crie um novo elemento canvas
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Defina a largura e a altura do canvas para corresponder à caixa delimitadora
+    maxWidth = Math.min(bb[0].width, 720); // limite a largura máxima
+    maxHeight = Math.min(bb[0].height, 500); // limite a altura máxima
+    canvas.width = maxWidth;
+    canvas.height = maxHeight;
+
+    // Desenhe a parte do canvas original que corresponde à caixa delimitadora no novo canvas
+    ctx.drawImage(
+      source, // o canvas original
+      bb[0].x1, bb[0].y1, // as coordenadas de início do corte no canvas original
+      maxWidth, maxHeight, // a largura e a altura do corte
+      0, 0, // as coordenadas de início do desenho no novo canvas
+      maxWidth, maxHeight // a largura e a altura do desenho
+    );
+
+    // Crie uma URL de objeto a partir do canvas
+    const url = canvas.toDataURL();
+
+    // Crie um novo elemento de imagem
+    const img = document.createElement('img');
+
+    // Defina o src do elemento de imagem para a URL do objeto
+    img.src = url;
+
+    // Adicione o novo elemento de imagem ao documento
+    document.body.appendChild(img);
+  };
+
 
 
   return (

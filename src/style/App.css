@@ -8,7 +8,7 @@
   align-items: center;
 }
 
-.App > * {
+.App>* {
   margin: 3px 0;
 }
 
@@ -27,7 +27,7 @@
   border-radius: 5px;
 }
 
-.content > img {
+.content>img {
   display: none;
   width: 100%;
   max-width: 720px;
@@ -35,7 +35,7 @@
   border-radius: 10px;
 }
 
-.content > video {
+.content>video {
   display: none;
   width: 100%;
   max-width: 720px;
@@ -47,7 +47,7 @@
   position: relative;
 }
 
-.content > canvas {
+.content>canvas {
   position: absolute;
   top: 0;
   left: 0;
