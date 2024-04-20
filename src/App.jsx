@@ -169,13 +169,14 @@ const App = () => {
     <div className="App">
       {loading.loading && <Loader>Loading model... {(loading.progress * 100).toFixed(2)}%</Loader>}
       <div className="header">
-        <h1>📷 YOLOv5 Live Detection App</h1>
+        <h1>📷 Classificador de Doenças Parasitária em Ovinos 🐑</h1>
         <p>
-          YOLOv5 live detection application on browser powered by <code>tensorflow.js</code>
+          Detecção da mucosa e classificação do corte e diagnóstico
         </p>
         <p>
-          Serving : <code className="code">{modelName}</code>
+          Modelos : <code className="code">YoloV5s e MobileNet</code>
         </p>
+
       </div>
 
       <div className="content">

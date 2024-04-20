@@ -53,10 +53,10 @@ const ButtonHandler = ({ imageRef, cameraRef, videoRef }) => {
           else alert(`Can't handle more than 1 stream\nCurrently streaming : ${streaming}`); // if streaming video or webcam
         }}
       >
-        {streaming === "image" ? "Close" : "Open"} Image
+        {streaming === "image" ? "Fechar" : "Abrir"} Imagem
       </button>
 
-      {/* Video Handler */}
+      {/* Video Handler
       <input
         type="file"
         accept="video/*"
@@ -81,10 +81,10 @@ const ButtonHandler = ({ imageRef, cameraRef, videoRef }) => {
         }}
       >
         {streaming === "video" ? "Close" : "Open"} Video
-      </button>
+      </button> */}
 
       {/* Webcam Handler */}
-      <button
+      {/* <button
         onClick={() => {
           // if not streaming
           if (streaming === null || streaming === "image") {
@@ -103,7 +103,7 @@ const ButtonHandler = ({ imageRef, cameraRef, videoRef }) => {
         }}
       >
         {streaming === "camera" ? "Close" : "Open"} Webcam
-      </button>
+      </button> */}
     </div>
   );
 };
