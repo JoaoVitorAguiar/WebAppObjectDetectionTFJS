@@ -35,7 +35,7 @@ const App = () => {
   useEffect(() => { // Carregar yolo
     tf.ready().then(async () => {
       const yolov5 = await tf.loadGraphModel(
-        `${window.location.href}/${modelName}_web_model/model.json`,
+        `yolov5n_web_model/model.json`,
         {
           onProgress: (fractions) => {
             setLoading({ loading: true, progress: fractions }); // set loading fractions
@@ -60,7 +60,7 @@ const App = () => {
   useEffect(() => { // Carregar classificador
     tf.ready().then(async () => {
       const mobileNet = await tf.loadLayersModel(
-        `${window.location.href}/classificator/model.json`,
+        `/classificator/model.json`,
         {
           onProgress: (fractions) => {
             setLoading({ loading: true, progress: fractions }); // set loading fractions
@@ -174,7 +174,7 @@ const App = () => {
           Detecção da mucosa e classificação do corte e diagnóstico
         </p>
         <p>
-          Modelos : <code className="code">YoloV5s e MobileNet</code>
+          Modelos : <code className="code">YoloV5n e MobileNet</code>
         </p>
 
       </div>
