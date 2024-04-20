@@ -63,6 +63,39 @@ export const detectImage = async (imgSource, model, classThreshold, canvasRef) =
   return boundingBox
 };
 
+export const classifyImage = async (imgSource, model) => {
+  // Obtenha as dimensões do modelo
+  const [modelWidth, modelHeight] = model.inputShape.slice(1, 3);
+
+  // Inicie um escopo de TensorFlow para gerenciamento de memória
+  tf.engine().startScope();
+
+  try {
+    // Pré-processamento da imagem
+    const [input, _, __] = preprocess(imgSource, modelWidth, modelHeight);
+
+    // Execute a previsão
+    const predictions = await model.net.predict(input);
+
+    // Obtenha os resultados como array
+    const predictionArray = predictions.dataSync();
+
+    // Libere a memória usada por `input` e `predictions`
+    tf.dispose([input, predictions]);
+
+    // Encerre o escopo do TensorFlow
+    tf.engine().endScope();
+
+    // Retorne os resultados da previsão
+    return predictionArray;
+  } catch (error) {
+    console.error("Erro ao classificar imagem:", error);
+    tf.engine().endScope(); // Encerre o escopo em caso de erro
+    return null; // ou outra forma de lidar com o erro
+  }
+};
+
+
 /**
  * Function to detect video from every source.
  * @param {HTMLVideoElement} vidSource video source
