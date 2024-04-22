@@ -171,10 +171,7 @@ const App = () => {
       <div className="header">
         <h1>📷 Classificador de Doenças Parasitária em Ovinos 🐑</h1>
         <p>
-          Detecção da mucosa e classificação do corte e diagnóstico
-        </p>
-        <p>
-          Modelos : <code className="code">YoloV5n e MobileNet</code>
+          Detecção e classificação da mucosa
         </p>
 
       </div>
